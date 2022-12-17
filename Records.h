@@ -20,6 +20,7 @@ public:
 	Student(string, string); //construct student with name
 	bool addscore(float); //add score for student
 	void addprojscore(float); //add project score
+	bool deletelastscore();// delete last score
 
 	void setfname(string); //set student first name
 	void setlname(string); //set student last name
@@ -36,12 +37,14 @@ class Ugrad : public Student {
 public:
 	Ugrad(string, string);
 	char getgrade();
+	bool deletelastscore();//delete last score
 };
 
 class Grad : public Student {
 public:
 	Grad(string, string);
 	char getgrade();
+	bool deletelastscore();//delete last score
 };
 
 //The actual database
@@ -62,6 +65,7 @@ public:
 	int addgrad(string, string); //add grad to records
 	bool addscore(string, string, float); //add score to a student
 	bool addprojscore(string, string, float); //add project 
+	bool deletelastscore(string fname, string lname);//delete last score
 
 	void print(); //print list of students
 	bool load(string&); //copy student info from file to records database

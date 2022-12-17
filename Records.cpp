@@ -36,6 +36,17 @@ bool Student::addscore(float grade) {
 	return true; //return success
 }
 
+bool Student::deletelastscore() // find the last score, delete it and reduce the count by 1
+{
+	if (count == 0)
+	{
+		cout << "Not grades found" << endl;
+		return false;
+	}
+	scores[--count] = NULL;
+	return true;
+}
+
 void Student::addprojscore(float score) { //add project score
 	proj_score = score;
 }
@@ -89,6 +100,17 @@ char Ugrad::getgrade() { //calculate grade for user
 	}
 }
 
+bool Ugrad::deletelastscore()// delete last score
+{
+	if (count == 0)
+	{
+		cout << "Not grades found" << endl;
+		return false;
+	}
+	scores[--count] = NULL;
+	return true;
+}
+
 //Graduate
 Grad::Grad(string fname, string lname) : Student(fname, lname) { //constructor
 	student_type = 'G';
@@ -118,6 +140,17 @@ char Grad::getgrade() { //calculate grade
 	else {
 		return 'F';
 	}
+}
+
+bool Grad::deletelastscore() // delete last score
+{
+	if (count == 0)
+	{
+		cout << "Not grades found" << endl;
+		return false;
+	}
+	scores[--count] = NULL;
+	return true;
 }
 
 //Records
@@ -155,6 +188,16 @@ int Records::addgrad(string fname, string lname) { //undergrad
 
 	students[count++] = new Grad(fname, lname); //add grad to list
 	return 0; //return success
+}
+
+bool Records::deletelastscore(string fname, string lname) // delete last score
+{
+	for (int i = 0; i < count; i++) {
+		if ((students[i]->firstname == fname) && //chick if first name matches
+			(students[i]->lastname == lname)) { //check if last name matches
+			return students[i]->deletelastscore(); //delete last score
+		}
+	}
 }
 
 bool Records::addscore(string fname, string lname, float sc) {

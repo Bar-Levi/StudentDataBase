@@ -10,7 +10,7 @@ bool checkNum(string&); //check for valid score
 bool checkFile(string&); //check for valid file name
 
 void main() {
-	cout << "STUDENT RECORDS\nValid commands: addstudent, addgrad, addscore, addpscore, save, load, print, quit\n";
+	cout << "STUDENT RECORDS\nValid commands: addstudent, addgrad, addscore, addpscore, deletelastscore ,save, load, print, quit\n";
 
 	bool run = true;
 	Records record;
@@ -117,6 +117,19 @@ void main() {
 					if (!check) { //check if score could be added
 						cout << "Could not add score.\n";
 					}
+			}
+		}
+		else if (command == "deletelastscore")
+		{
+			if (first == "" || last == "") {
+				cout << "Invalid arguments.\n";
+			}
+			else if (!checkName(first) || !checkName(last)) { //If full name is not given
+				cout << "Please enter a name again.\n";
+			}
+			else
+			{
+				record.deletelastscore(first, last);
 			}
 		}
 		else { //Incorrect command
