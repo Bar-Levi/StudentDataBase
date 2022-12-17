@@ -112,6 +112,25 @@ char Ugrad::getgrade() { //calculate grade for user
 	}
 }
 
+bool Records::changename(string fname, string lname)
+{
+	string new_first, new_last;
+	cout << "Type your first name:\n";
+	cin >> new_first;
+	cout << "Type your first name:\n";
+	cin >> new_last;
+	getchar();
+	for (int i = 0; i < count; i++) {
+		if ((students[i]->firstname == fname) && //check if first name matches
+			(students[i]->lastname == lname)) { //check if last name matches
+			students[i]->firstname = new_first;
+			students[i]->lastname = new_last;
+			return true;
+		}
+	}
+	return false;
+}
+
 bool Ugrad::deletelastscore()// delete last score
 {
 	if (count == 0)

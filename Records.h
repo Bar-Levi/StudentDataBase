@@ -66,6 +66,7 @@ public:
 	int addgrad(string, string); //add grad to records
 	bool addscore(string, string, float, string); //add score to a student
 	bool addprojscore(string, string, float); //add project 
+	bool changename(string fname, string lname);//change name
 	bool deletelastscore(string fname, string lname);//delete last score
 	bool addbonus(string, string, string); // add a bonus to all of the grades of a given student
 	void print(); //print list of students
