@@ -22,7 +22,7 @@ public:
 	bool addscore(float,string); //add score for student
 	void addprojscore(float); //add project score
 	bool deletelastscore();// delete last score
-
+	bool addbonus(float); // adds a bonus by percentage to all of the student scores
 	void setfname(string); //set student first name
 	void setlname(string); //set student last name
 	string getfname(); //return first name
@@ -67,7 +67,7 @@ public:
 	bool addscore(string, string, float, string); //add score to a student
 	bool addprojscore(string, string, float); //add project 
 	bool deletelastscore(string fname, string lname);//delete last score
-
+	bool addbonus(string, string, string); // add a bonus to all of the grades of a given student
 	void print(); //print list of students
 	bool load(string&); //copy student info from file to records database
 	bool save(string&); //save student info from record database to file

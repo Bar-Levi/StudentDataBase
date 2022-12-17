@@ -37,6 +37,14 @@ bool Student::addscore(float grade, string course) {
 	return true; //return success
 }
 
+bool Student::addbonus(float percentage) {
+	for (int i = 0; i < count; i++) {
+		scores[i] *= (1 + (percentage / 100));
+	}
+	return true;
+}
+
+
 bool Student::deletelastscore() // find the last score, delete it and reduce the count by 1
 {
 	if (count == 0)
@@ -47,6 +55,9 @@ bool Student::deletelastscore() // find the last score, delete it and reduce the
 	scores[--count] = NULL;
 	return true;
 }
+
+
+
 
 void Student::addprojscore(float score) { //add project score
 	proj_score = score;
@@ -339,4 +350,17 @@ bool Records::save(string& filename) {
 
 	savefile.close();
 	return true;
+}
+
+bool Records::addbonus(string fname, string lname, string percentage) {
+	float val = std::stof(percentage);
+	for (int i = 0; i < count; i++) {
+		if ((students[i]->firstname == fname) && //check if first name matches
+			(students[i]->lastname == lname)) { //check if last name matches
+			students[i]->addbonus(val); //add score
+			return true;
+		}
+	}
+	return false;
+
 }
