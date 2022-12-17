@@ -64,6 +64,7 @@ public:
 	}
 	int addstudent(string, string); //add undergrad to records
 	int addgrad(string, string); //add grad to records
+	int deletestudent(string, string); // delete a student
 	bool addscore(string, string, float, string); //add score to a student
 	bool addprojscore(string, string, float); //add project 
 	bool changename(string fname, string lname);//change name

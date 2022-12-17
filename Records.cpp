@@ -117,7 +117,7 @@ bool Records::changename(string fname, string lname)
 	string new_first, new_last;
 	cout << "Type your first name:\n";
 	cin >> new_first;
-	cout << "Type your first name:\n";
+	cout << "Type your last name:\n";
 	cin >> new_last;
 	getchar();
 	for (int i = 0; i < count; i++) {
@@ -219,6 +219,25 @@ int Records::addgrad(string fname, string lname) { //undergrad
 
 	students[count++] = new Grad(fname, lname); //add grad to list
 	return 0; //return success
+}
+
+int Records::deletestudent(string fname, string lname) { //undergrad
+	int deleted = 0;
+
+	for (int i = 0; i < count; i++) { //check if student exists in database
+		if (deleted)
+		{
+			students[i] = students[i + 1];
+		}
+
+		if ((students[i]->firstname == fname) && //check if first/last name matches
+			(students[i]->lastname == lname)) {
+			students[i] = students[i + 1];
+			count--;
+			deleted = 1; //return success
+		}
+	}
+	return deleted; //return failure
 }
 
 bool Records::deletelastscore(string fname, string lname) // delete last score
