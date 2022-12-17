@@ -15,17 +15,18 @@ void main() {
 	bool run = true;
 	Records record;
 	while (run) { // while command isn't quit
-		string line, command, first, last, score;
+		string line, command, first, last, score, course;
 		cout << "What would you like to do?: ";
 
 		getline(cin, line); //get line of input
 		istringstream stream(line);	//go string by string
-		stream >> command >> first >> last >> score; //initialize
+		stream >> command >> first >> last >> score >> course; //initialize
 
 		//make input lowercase
 		toLower(command);
 		toLower(first);
 		toLower(last);
+		toLower(course);
 
 		if (command == "quit") { //stop program
 			if (first != "") { //If more than 1 argument given
@@ -95,7 +96,7 @@ void main() {
 				}
 			}
 		}
-		else if (command == "addscore" || command == "addpscore") { //add score
+		else if (command == "addpscore") { //add pscore
 			if (first == "" || last == "" || score == "") {
 				cout << "Invalid arguments.\n";
 			}
@@ -107,16 +108,35 @@ void main() {
 			}
 			else {
 				bool check;
-					if (command == "addscore") {
-						check = record.addscore(first, last, stof(score));
-					}
-					else {
-						check = record.addprojscore(first, last, stof(score));
-					}
+				check = record.addprojscore(first, last, stof(score));
+				if (!check) { //check if score could be added
+					cout << "Could not add pscore.\n";
+				}
+			}
+		}
+		else if (command == "addscore") { //add score
+			if (first == "" || last == "" || score == "" || course == "") {
+				cout << "Invalid arguments.\n";
+			}
+			else if (!checkName(first) || !checkName(last)) { //If full name is not given
+				cout << "Please enter a name again.\n";
+			}
+			else if (!checkName(course)) { //If course name is not given
+				cout << "Please enter a course name again.\n";
+			}
+			else if (course.length() > 7) { //If course name is longer than 7
+				cout << "Course name up to 7 characters.\n";
+			}
+			else if (!checkNum(score)) { //If invalid score is given
+				cout << "Please enter a valid score.\n";
+			}
+			else {
+				bool check;
+				check = record.addscore(first, last, stof(score), course);
 
-					if (!check) { //check if score could be added
-						cout << "Could not add score.\n";
-					}
+				if (!check) { //check if score could be added
+					cout << "Could not add score.\n";
+				}
 			}
 		}
 		else if (command == "deletelastscore")
@@ -132,11 +152,11 @@ void main() {
 				record.deletelastscore(first, last);
 			}
 		}
+
 		else { //Incorrect command
 			cout << "Invalid command.\n";
 		}
 	}
-
 }
 
 void toLower(string& s) {

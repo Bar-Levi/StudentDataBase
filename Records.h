@@ -14,11 +14,12 @@ public:
 	int count; //number of scores for student
 	float proj_score;
 	float scores[NUM_TESTS]; //list of scores
+	string score_names[NUM_TESTS];
 	char student_type; //undergrad(U) and grad(G)
 
 	Student(); //construct Student
 	Student(string, string); //construct student with name
-	bool addscore(float); //add score for student
+	bool addscore(float,string); //add score for student
 	void addprojscore(float); //add project score
 	bool deletelastscore();// delete last score
 
@@ -63,7 +64,7 @@ public:
 	}
 	int addstudent(string, string); //add undergrad to records
 	int addgrad(string, string); //add grad to records
-	bool addscore(string, string, float); //add score to a student
+	bool addscore(string, string, float, string); //add score to a student
 	bool addprojscore(string, string, float); //add project 
 	bool deletelastscore(string fname, string lname);//delete last score
 

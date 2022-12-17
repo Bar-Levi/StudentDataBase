@@ -27,11 +27,12 @@ void Student::setlname(string name) {
 	lastname = name; //set last name to desired name
 }
 
-bool Student::addscore(float grade) {
+bool Student::addscore(float grade, string course) { 
 	if (count == NUM_TESTS) {
 		return false; //if score list is full return fail
 	}
-	scores[count++] = grade; //add score to list
+	scores[count] = grade; //add score to list
+	score_names[count++] = course; 
 
 	return true; //return success
 }
@@ -200,11 +201,11 @@ bool Records::deletelastscore(string fname, string lname) // delete last score
 	}
 }
 
-bool Records::addscore(string fname, string lname, float sc) {
+bool Records::addscore(string fname, string lname, float sc, string course) { 
 	for (int i = 0; i < count; i++) {
 		if ((students[i]->firstname == fname) && //chick if first name matches
 			(students[i]->lastname == lname)) { //check if last name matches
-			students[i]->addscore(sc); //add score
+			students[i]->addscore(sc, course); //add score 
 			return true;
 		}
 	}
@@ -226,7 +227,7 @@ void Records::print() { //print students and their scores
 	cout << left << setw(15) << "Name" << "|"
 		<< left << setw(5) << "Type" << "|"
 		<< left << setw(7) << "Project" << "|"
-		<< right << setw(20) << "Scores" << "|"
+		<< left << setw(55) << "Scores" << "|" 
 		<< setw(5) << "Grade" << endl;
 
 	for (int i = 0; i < count; i++) {
@@ -243,13 +244,14 @@ void Records::print() { //print students and their scores
 			cout << left << setw(8) << "-";
 		}
 
-		//print scores
+		//print scores, course name 
 		int j;
 		for (j = 0; j < students[i]->count; j++) {
-			cout << right << setw(4) << students[i]->scores[j];
+			cout << right << setw(7) << students[i]->score_names[j] << ":";
+			cout << left << setw(3) << students[i]->scores[j]; 
 		}
 		for (; j < NUM_TESTS; j++) {
-			cout << right << setw(4) << "-";
+			cout << left << setw(10) << "-";
 		}
 
 		//print grade
@@ -264,7 +266,7 @@ bool Records::load(string& filename) {//copy student info from file to records d
 	ifstream loadfile(filename, ios::in); //try to open a file
 	while (loadfile) { //if file can open
 		works = true;
-		string first, last, type, proj, score, grade;
+		string first, last, type, proj, score, grade, course;
 		loadfile >> first >> last >> type >> proj; //get full name
 
 		if (first == "") { //if first name empty then there is no more in database
@@ -289,7 +291,7 @@ bool Records::load(string& filename) {//copy student info from file to records d
 				continue;
 			}
 			else { //add score to students list
-				addscore(first, last, stof(score));
+				addscore(first, last, stof(score), course);
 			}
 		}
 
@@ -308,6 +310,7 @@ bool Records::save(string& filename) {
 			<< left << setw(9) << students[i]->lastname
 			<< left << setw(6) << students[i]->student_type;
 
+
 		//print project score if it is entered
 		if (students[i]->proj_score == NULL) {
 			savefile << left << setw(8) << "-";
@@ -319,10 +322,11 @@ bool Records::save(string& filename) {
 		//print scores
 		int j;
 		for (j = 0; j < students[i]->count; j++) {
-			savefile << right << setw(4) << students[i]->scores[j];
+			cout << right << setw(7) << students[i]->score_names[j] << ":";
+			cout << left << setw(3) << students[i]->scores[j];
 		}
 		for (; j < NUM_TESTS; j++) {
-			savefile << right << setw(4) << "-";
+			cout << left << setw(10) << "-";
 		}
 
 		//print grade
