@@ -5,400 +5,607 @@
 #include <iomanip>
 using namespace std;
 
+
+
 Student::Student() { //constructor
-	firstname = "";
-	lastname = "";
-	count = 0;
-	proj_score = NULL;
+    firstname = "";
+    lastname = "";
+    count = 0;
+    proj_score = NULL;
+    proj_name = "";
+    id = 0;
 }
 
-Student::Student(string fname, string lname) { // constructor with given name
-	firstname = fname;
-	lastname = lname;
-	count = 0;
-	proj_score = NULL;
+Student::Student(string fname, string lname, long id) { // constructor with given name
+    firstname = fname;
+    lastname = lname;
+    count = 0;
+    proj_score = NULL;
+    this->id = id;
 }
 
 void Student::setfname(string name) {
-	firstname = name; //set first name to desired name
+    firstname = name; //set first name to desired name
 }
 
 void Student::setlname(string name) {
-	lastname = name; //set last name to desired name
+    lastname = name; //set last name to desired name
 }
 
-bool Student::addscore(float grade, string course) { 
-	if (count == NUM_TESTS) {
-		return false; //if score list is full return fail
-	}
-	scores[count] = grade; //add score to list
-	score_names[count++] = course; 
+bool Student::addscore(float grade, string course) {
+    if (count == NUM_TESTS) {
+        return false; //if score list is full return fail
+    }
+    scores[count] = grade; //add score to list
+    score_names[count] = course;
+    count++;
 
-	return true; //return success
+    return true; //return success
 }
 
-bool Student::addbonus(float percentage) {
-	for (int i = 0; i < count; i++) {
-		scores[i] *= (1 + (percentage / 100));
-	}
-	return true;
+bool Student::addbonus(float percentage, string subject) {
+    for (int i = 0; i < count; i++) {
+        if (score_names[i] == subject)
+            scores[i] *= (1 + (percentage / 100));
+        if (scores[i] > 100 || scores[i] < 0)
+            scores[i] > 100 ? scores[i] = 100 : scores[i] = 0;
+    }
+    return true;
 }
 
 
-bool Student::deletelastscore() // find the last score, delete it and reduce the count by 1
+bool Student::editscore() // find the last score, delete it and reduce the count by 1
 {
-	if (count == 0)
-	{
-		cout << "Not grades found" << endl;
-		return false;
-	}
-	scores[--count] = NULL;
-	return true;
+    int edit;
+    if (count == 0)
+    {
+        cout << "Not grades found" << endl;
+        return false;
+    }
+    cout << "Enter which grade you want to edit?" << endl;
+    cin >> edit;
+    if (edit > count || edit < 0)
+    {
+        cout << "Not valid index" << endl;
+        getchar();
+        return false;
+    }
+    cout << "Enter new grade" << endl;
+    int newscore;
+    cin >> newscore;
+    if (newscore < 0 || newscore>100)
+    {
+        cout << "Not Valid Score" << endl;
+        return false;
+    }
+    scores[edit - 1] = newscore;
+    getchar();
+    cout << "Grade Changed Successfully" << endl;
+    return true;
 }
 
 
 
 
-void Student::addprojscore(float score) { //add project score
-	proj_score = score;
+void Student::addprojscore(float grade, string course) { //add project score 
+    if (!proj_score || (proj_name == course))
+    {
+        proj_score = grade;
+        proj_name = course;
+    }
+    else
+    {
+        cout << "CANT CHANGE PSCORE" << endl;
+    }
+
+
+
+
+
 }
 
 string Student::getfname() {
-	return firstname; //return first name of student
+    return firstname; //return first name of student
 }
 
 string Student::getlname() {
-	return lastname; //return last name of student
+    return lastname; //return last name of student
 }
 
 //Undergrad
-Ugrad::Ugrad(string fname, string lname) : Student(fname, lname) { //constructor
-	student_type = 'U';
+Ugrad::Ugrad(string fname, string lname, long id) : Student(fname, lname, id) { //constructor
+    student_type = 'U';
 }
 
 char Ugrad::getgrade() { //calculate grade for user
-	if (count == 0 && proj_score == NULL) {
-		return '-'; //no scores added
-	}
+    if (count == 0 && proj_score == NULL) {
+        return '-'; //no scores added
+    }
 
-	float grade = 0, sum = 0, average;
-	for (int i = 0; i < count; i++) {
-		grade += scores[i]; //add all scores together
-		sum += 1; //get total number of grades
-	}
+    float grade = 0, sum = 0, average;
+    for (int i = 0; i < count; i++) {
+        grade += scores[i]; //add all scores together
+        sum += 1; //get total number of grades
+    }
 
-	if (proj_score != NULL) { //if project score entered
-		grade += proj_score; //add project score
-		sum += 1; //add prject score to total amount of scores added
-	}
+    if (proj_score != NULL) { //if project score entered
+        grade += proj_score; //add project score
+        sum += 1; //add prject score to total amount of scores added
+    }
 
-	average = grade / sum; //get average score
+    average = grade / sum; //get average score
 
-	//return letter grade
-	if (average >= 90) {
-		return 'A';
-	}
-	else if (average >= 80) {
-		return 'B';
-	}
-	else if (average >= 70) {
-		return 'C';
-	}
-	else if (average >= 60) {
-		return 'D';
-	}
-	else {
-		return 'F';
-	}
+    //return letter grade
+    if (average >= 90) {
+        return 'A';
+    }
+    else if (average >= 80) {
+        return 'B';
+    }
+    else if (average >= 70) {
+        return 'C';
+    }
+    else if (average >= 60) {
+        return 'D';
+    }
+    else {
+        return 'F';
+    }
 }
 
-bool Records::changename(string fname, string lname)
+bool Records::changeid(long lid)
 {
-	string new_first, new_last;
-	cout << "Type your first name:\n";
-	cin >> new_first;
-	cout << "Type your last name:\n";
-	cin >> new_last;
-	getchar();
-	for (int i = 0; i < count; i++) {
-		if ((students[i]->firstname == fname) && //check if first name matches
-			(students[i]->lastname == lname)) { //check if last name matches
-			students[i]->firstname = new_first;
-			students[i]->lastname = new_last;
-			return true;
-		}
-	}
-	return false;
+    long nid = 0;
+    cout << "Enter the new id :";
+    cin >> nid;
+    getchar();
+    for (int i = 0; i < count; i++)
+    {
+        if (students[i]->id == lid) //check if the id matches
+        {
+            students[i]->id = nid;
+            return true;
+        }
+
+    }
+    return false;
 }
 
-bool Ugrad::deletelastscore()// delete last score
+char Records::get_type(long num)
 {
-	if (count == 0)
-	{
-		cout << "Not grades found" << endl;
-		return false;
-	}
-	scores[--count] = NULL;
-	return true;
+    for (int i = 0; i < count; i++)
+    {
+        if (students[i]->id == num)
+        {
+            return students[i]->student_type;
+
+        }
+    }
+    return 'i';
+}
+
+bool Records::deletescoredex(int index, long id)
+{
+    for (int i = 0; i < count; i++)
+        if (students[i]->id == id)  //check if id matches
+            return students[i]->delscore(index);
+
+    return false;
+}
+
+bool Records::changecourseName(int index, long id, string newName)
+{
+    for (int i = 0; i < count; i++)
+        if (students[i]->id == id)  //check if id matches
+            return students[i]->changeCN(index, newName);
+
+    return false;
+}
+
+bool Records::checkIndex(long id, int index)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (students[i]->id == id)
+            if (students[i]->scores[index] >= 0)
+                return true;
+    }
+    return false;
+}
+
+bool Student::delscore(int index)
+{
+
+    if (count == 0)
+    {
+        cout << "Not grades found" << endl;
+        return false;
+    }
+    if (index > count || index < 0)
+    {
+        cout << "Not valid index" << endl;
+        getchar();
+        return false;
+    }
+    scores[index] = NULL;
+    score_names[index] = "";
+    for (int i = index; i < count - 1; i++)
+    {
+        score_names[i] = score_names[i + 1];
+        scores[i] = scores[i + 1];
+    }
+    scores[count - 1] = NULL;
+    score_names[count - 1] = "";
+    count--;
+    cout << "Grade Deleted Successfully" << endl;
+    getchar();
+    return true;
+}
+
+bool Student::changeCN(int index, string newName)
+{
+
+    if (count == 0)
+    {
+        cout << "No grades found" << endl;
+        return false;
+    }
+    if (index > count || index < 0)
+    {
+        cout << "Not valid index" << endl;
+        getchar();
+        return false;
+    }
+
+    score_names[index] = newName;
+    cout << "Course name changed successfully" << endl;
+    getchar();
+
+    return true;
+}
+
+bool Records::changename(string fname)
+{
+    string new_first, new_last;
+    cout << "Type your first name:\n";
+    cin >> new_first;
+    cout << "Type your last name:\n";
+    cin >> new_last;
+    getchar();
+    for (int i = 0; i < count; i++) {
+        if (students[i]->id == (stol(fname)))
+        { //check if last name matches
+            students[i]->firstname = new_first;
+            students[i]->lastname = new_last;
+            return true;
+        }
+    }
+    cout << "There is no student with this name!\n";
+    return false;
+}
+
+bool Ugrad::editscore()// delete last score
+{
+    int edit;
+    if (count == 0)
+    {
+        cout << "Not grades found" << endl;
+        return false;
+    }
+    cout << "Enter which grade you want to edit?" << endl;
+    cin >> edit;
+    if (edit > count || edit < 0)
+    {
+        cout << "Not valid index" << endl;
+        getchar();
+        return false;
+    }
+    cout << "Enter new grade" << endl;
+    int newscore;
+    cin >> newscore;
+    scores[edit - 1] = newscore;
+    getchar();
+    cout << "Grade Changed Successfully" << endl;
+    return true;
 }
 
 //Graduate
-Grad::Grad(string fname, string lname) : Student(fname, lname) { //constructor
-	student_type = 'G';
+Grad::Grad(string fname, string lname, long id) : Student(fname, lname, id) { //constructor
+    student_type = 'G';
 }
 
 char Grad::getgrade() { //calculate grade
-	if (count == 0 && proj_score == NULL) {
-		return '-'; //no scores added
-	}
+    if (count == 0 && proj_score == NULL) {
+        return '-'; //no scores added
+    }
 
-	float grade = 0, sum = 0, average;
-	for (int i = 0; i < count; i++) {
-		grade += scores[i]; //add all scores together
-		sum += 1; //get total number of grades
-	}
+    float grade = 0, sum = 0, average;
+    for (int i = 0; i < count; i++) {
+        grade += scores[i]; //add all scores together
+        sum += 1; //get total number of grades
+    }
 
-	if (proj_score != NULL) { //if project score entered
-		grade += (5 * proj_score); //add project score
-		sum += 5; //add prject score to total amount of scores added
-	}
+    if (proj_score != NULL) { //if project score entered
+        grade += (5 * proj_score); //add project score
+        sum += 5; //add prject score to total amount of scores added
+    }
 
-	average = grade / sum; //get average score
+    average = grade / sum; //get average score
 
-	if (proj_score > MIN_PROJ_SCORE && average > 65) {
-		return 'P';
-	}
-	else {
-		return 'F';
-	}
+    if (proj_score > MIN_PROJ_SCORE && average > 65) {
+        return 'P';
+    }
+    else {
+        return 'F';
+    }
 }
 
-bool Grad::deletelastscore() // delete last score
+bool Grad::editscore() // delete last score
 {
-	if (count == 0)
-	{
-		cout << "Not grades found" << endl;
-		return false;
-	}
-	scores[--count] = NULL;
-	return true;
+    int edit;
+    if (count == 0)
+    {
+        cout << "Not grades found" << endl;
+        return false;
+    }
+    cout << "Enter which grade you want to edit?" << endl;
+    cin >> edit;
+    if (edit > count || edit < 0)
+    {
+        cout << "Not valid index" << endl;
+        getchar();
+        return false;
+    }
+    cout << "Enter new grade" << endl;
+    int newscore;
+    cin >> newscore;
+    scores[edit - 1] = newscore;
+    getchar();
+    cout << "Grade Changed Successfully" << endl;
+    return true;
 }
 
 //Records
 Records::Records() { //constructor
-	count = 0;
+    count = 0;
 }
 
-int Records::addstudent(string fname, string lname) { //undergrad
-	if (count == MAX_NUM_STUDENTS) {
-		return -1; //return error if student list is full
-	}
-
-	for (int i = 0; i < count; i++) { //sheck if student exists in database
-		if ((students[i]->firstname == fname) && //check if first/last name matches
-			(students[i]->lastname == lname)) {
-			return -2; //return error if student exists in database
-		}
-	}
-
-	students[count++] = new Ugrad(fname, lname); //add undergrad to list
-	return 0; //return success
+int Records::addstudent(string fname, string lname, long id) { //undergrad
+    if (count == MAX_NUM_STUDENTS) {
+        return -1; //return error if student list is full
+    }
+    students[count++] = new Ugrad(fname, lname, id); //add undergrad to list
+    return 0; //return success
 }
 
-int Records::addgrad(string fname, string lname) { //undergrad
-	if (count == MAX_NUM_STUDENTS) {
-		return -1; //return error if student list is full
-	}
+int Records::addgrad(string fname, string lname, long id) { //undergrad
+    if (count == MAX_NUM_STUDENTS) {
+        return -1; //return error if student list is full
+    }
 
-	for (int i = 0; i < count; i++) { //sheck if student exists in database
-		if ((students[i]->firstname == fname) && //check if first/last name matches
-			(students[i]->lastname == lname)) {
-			return -2; //return error if student exists in database
-		}
-	}
+    for (int i = 0; i < count; i++) { //sheck if student exists in database
+        if ((students[i]->id == id))  //check if id matches
+            return -2; //return error if student exists in database
+    }
 
-	students[count++] = new Grad(fname, lname); //add grad to list
-	return 0; //return success
+    students[count++] = new Grad(fname, lname, id); //add grad to list
+    return 0; //return success
 }
 
-int Records::deletestudent(string fname, string lname) { //undergrad
-	int deleted = 0;
+int Records::deletestudent(long id) { //undergrad
+    int deleted = 0;
 
-	for (int i = 0; i < count; i++) { //check if student exists in database
-		if (deleted)
-		{
-			students[i] = students[i + 1];
-		}
+    for (int i = 0; i < count; i++) { //check if student exists in database
+        if (deleted)
+        {
+            students[i] = students[i + 1];
+        }
 
-		if ((students[i]->firstname == fname) && //check if first/last name matches
-			(students[i]->lastname == lname)) {
-			students[i] = students[i + 1];
-			count--;
-			deleted = 1; //return success
-		}
-	}
-	return deleted; //return failure
+        if (students[i]->id == id) { //check if first/last name matches
+            students[i] = students[i + 1];
+            count--;
+            deleted = 1; //return success
+        }
+    }
+    return deleted; //return failure
 }
 
-bool Records::deletelastscore(string fname, string lname) // delete last score
+bool Records::editscore(long id) // delete last score
 {
-	for (int i = 0; i < count; i++) {
-		if ((students[i]->firstname == fname) && //chick if first name matches
-			(students[i]->lastname == lname)) { //check if last name matches
-			return students[i]->deletelastscore(); //delete last score
-		}
-	}
+    for (int i = 0; i < count; i++)
+        if (students[i]->id == id)  //chick if first name matches
+            return students[i]->editscore(); //delete last score
+    return false;
 }
 
-bool Records::addscore(string fname, string lname, float sc, string course) { 
-	for (int i = 0; i < count; i++) {
-		if ((students[i]->firstname == fname) && //chick if first name matches
-			(students[i]->lastname == lname)) { //check if last name matches
-			students[i]->addscore(sc, course); //add score 
-			return true;
-		}
-	}
-	return false;
+bool Records::checkForLetter(string& n) // check if there is a letter in the string
+{
+    for (int i = 0; i < n.length(); i++)
+    {
+        if (n[i] < '0' || n[i]>'9')
+            return true;
+    }
+    return false;
 }
 
-bool Records::addprojscore(string fname, string lname, float sc) {
-	for (int i = 0; i < count; i++) {
-		if ((students[i]->firstname == fname) && //chick if first name matches
-			(students[i]->lastname == lname)) { //check if last name matches
-			students[i]->addprojscore(sc); //add score
-			return true;
-		}
-	}
-	return false;
+bool Records::addscore(long id, string course, string score)
+{
+    if (checkForLetter(score))
+    {
+        string temp = course;
+        course = score;
+        score = temp;
+    }
+    for (int i = 0; i < count; i++) {
+        if (students[i]->id == id) { //chick if first name matches
+            students[i]->addscore(stof(score), course); //add score
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Records::addprojscore(long id, string course, string score) {
+    if (checkForLetter(score))
+    {
+        string temp = course;
+        course = score;
+        score = temp;
+    }
+    for (int i = 0; i < count; i++) {
+        if (students[i]->id == id) { //chick if first name matches
+            students[i]->addprojscore(stof(score), course); //add score
+            return true;
+        }
+    }
+    return false;
 }
 
 void Records::print() { //print students and their scores
-	cout << left << setw(15) << "Name" << "|"
-		<< left << setw(5) << "Type" << "|"
-		<< left << setw(7) << "Project" << "|"
-		<< left << setw(55) << "Scores" << "|" 
-		<< setw(5) << "Grade" << endl;
+    cout << left << setw(20) << "Name" << "|"
+        << left << setw(9) << "ID " << "|"
+        << left << setw(12) << "Type" << "|"
+        << left << setw(10) << "Project" << "|"
+        << left << setw(55) << "Scores" << "|"
+        << setw(5) << "Grade" << endl;
 
-	for (int i = 0; i < count; i++) {
-		//print name, student type, project score
-		cout << left << setw(7) << students[i]->firstname
-			<< left << setw(9) << students[i]->lastname
-			<< left << setw(6) << students[i]->student_type;
+    for (int i = 0; i < count; i++) {
+        //print name, student type, project score
+        cout << left << setw(9) << students[i]->firstname
+            << left << setw(13) << students[i]->lastname
+            << left << setw(10) << students[i]->id
+            << left << setw(0) << students[i]->student_type << "             ";
 
-		//print project score if it is entered
-		if (students[i]->proj_score != NULL) {
-			cout << left << setw(8) << students[i]->proj_score;
-		}
-		else {
-			cout << left << setw(8) << "-";
-		}
+        //print project score if it is entered
+        if (students[i]->proj_score != NULL)
+        {
+            cout << left << setw(5) << students[i]->proj_name << ":" << students[i]->proj_score << "        ";
+        }
+        else {
+            cout << left << setw(13) << "-";
+        }
 
-		//print scores, course name 
-		int j;
-		for (j = 0; j < students[i]->count; j++) {
-			cout << right << setw(7) << students[i]->score_names[j] << ":";
-			cout << left << setw(3) << students[i]->scores[j]; 
-		}
-		for (; j < NUM_TESTS; j++) {
-			cout << left << setw(10) << "-";
-		}
+        //print scores, course name
+        int j;
+        for (j = 0; j < students[i]->count; j++) {
+            cout << right << setw(7) << students[i]->score_names[j] << ":";
+            cout << left << setw(3) << students[i]->scores[j];
+        }
+        for (; j < NUM_TESTS; j++) {
+            cout << left << setw(10) << "-";
+        }
 
-		//print grade
-		cout << " " << right << setw(4) << students[i]->getgrade() << endl;
-	}
+        //print grade
+        cout << " " << right << setw(4) << students[i]->getgrade() << endl;
+    }
 
-	cout << endl;
+    cout << endl;
 }
 
 bool Records::load(string& filename) {//copy student info from file to records database
-	bool works = false;
-	ifstream loadfile(filename, ios::in); //try to open a file
-	while (loadfile) { //if file can open
-		works = true;
-		string first, last, type, proj, score, grade, course;
-		loadfile >> first >> last >> type >> proj; //get full name
+    bool works = false;
+    ifstream loadfile(filename, ios::in); //try to open a file
+    while (loadfile) { //if file can open
+        works = true;
+        string first, last, type, proj, score, course, grade;
+        long id;
+        loadfile >> first >> last >> id >> type >> proj; //get full name
 
-		if (first == "") { //if first name empty then there is no more in database
-			break;
-		}
+        if (first == "") { //if first name empty then there is no more in database
+            break;
+        }
 
-		//add student to database
-		if (type == "U") {
-			addstudent(first, last); //create undergrad
-		}
-		else if (type == "G") {
-			addgrad(first, last); //create grad
-		}
+        //add student to database
+        if (type == "U") {
+            addstudent(first, last, id); //create undergrad
+        }
+        else if (type == "G") {
+            addgrad(first, last, id); //create grad
+        }
 
-		if (proj != "-") {
-			addprojscore(first, last, stof(proj));
-		}
+        if (proj != "-") {
+            addprojscore(stof(first), last, proj);
+        }
 
-		for (int i = 0; i < NUM_TESTS; i++) { //get their scores
-			loadfile >> score;
-			if (score == "-") { //there are no more scores for this student
-				continue;
-			}
-			else { //add score to students list
-				addscore(first, last, stof(score), course);
-			}
-		}
+        for (int i = 0; i < NUM_TESTS; i++) { //get their scores
+            loadfile >> score;
+            loadfile >> course;
+            if (score == "-") { //there are no more scores for this student
+                continue;
+            }
+            else { //add score to students list
+                addscore(stol(first), last, score);
+            }
+        }
 
-		loadfile >> grade; //just to get to the end of the line
-	}
+        loadfile >> grade; //just to get to the end of the line
+    }
 
-	loadfile.close();
-	return works;
+    loadfile.close();
+    return works;
 }
 
 bool Records::save(string& filename) {
-	ofstream savefile(filename, ios::out);
-	for (int i = 0; i < count; i++) {
-		//print name, student type, project score
-		savefile << left << setw(7) << students[i]->firstname
-			<< left << setw(9) << students[i]->lastname
-			<< left << setw(6) << students[i]->student_type;
+    ofstream savefile(filename, ios::out);
+    for (int i = 0; i < count; i++) {
+        //print name, student type, project score
+        savefile << left << setw(7) << students[i]->firstname
+            << left << setw(9) << students[i]->lastname
+            << left << setw(6) << students[i]->student_type;
 
 
-		//print project score if it is entered
-		if (students[i]->proj_score == NULL) {
-			savefile << left << setw(8) << "-";
-		}
-		else {
-			savefile << left << setw(8) << students[i]->proj_score;
-		}
+        //print project score if it is entered
+        if (students[i]->proj_score == NULL) {
+            savefile << left << setw(8) << "-";
+        }
+        else {
+            savefile << left << setw(8) << students[i]->proj_score;
+        }
 
-		//print scores
-		int j;
-		for (j = 0; j < students[i]->count; j++) {
-			cout << right << setw(7) << students[i]->score_names[j] << ":";
-			cout << left << setw(3) << students[i]->scores[j];
-		}
-		for (; j < NUM_TESTS; j++) {
-			cout << left << setw(10) << "-";
-		}
+        //print scores
+        int j;
+        for (j = 0; j < students[i]->count; j++) {
+            savefile << right << setw(7) << students[i]->score_names[j] << ":";
+            savefile << left << setw(3) << students[i]->scores[j];
+        }
+        for (; j < NUM_TESTS; j++) {
+            savefile << left << setw(10) << "-";
+        }
 
-		//print grade
-		savefile << " " << right << setw(4) << students[i]->getgrade();
+        //print grade
+        savefile << " " << right << setw(4) << students[i]->getgrade();
 
-		if (i != count - 1) { //if not at the end of array 
-			savefile << endl;	  //start new line for next student
-		}
-	}
+        if (i != count - 1) { //if not at the end of array
+            savefile << endl;      //start new line for next student
+        }
+    }
 
-	savefile.close();
-	return true;
+    savefile.close();
+    return true;
 }
 
-bool Records::addbonus(string fname, string lname, string percentage) {
-	float val = std::stof(percentage);
-	for (int i = 0; i < count; i++) {
-		if ((students[i]->firstname == fname) && //check if first name matches
-			(students[i]->lastname == lname)) { //check if last name matches
-			students[i]->addbonus(val); //add score
-			return true;
-		}
-	}
-	return false;
+bool Records::checkID(long num)
+{
+    for (int i = 0; i < count; i++)
+    {
+        if (num == students[i]->id)
+            return false;
+    }
+    return true;
+}
+
+bool Records::addbonus(long id, string percentage) {
+    string subject;
+    cout << "Enter subject:\n";
+    cin >> subject;
+    getchar();
+    float val = std::stof(percentage);
+    for (int i = 0; i < count; i++) {
+        if ((students[i]->id == id)) { //check if ID matches
+            students[i]->addbonus(val, subject); // add bonus(can be negative)
+            return true;
+        }
+    }
+    return false;
 
 }
