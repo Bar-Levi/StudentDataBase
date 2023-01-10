@@ -47,6 +47,7 @@ bool Student::addbonus(float percentage, string subject) {
     for (int i = 0; i < count; i++) {
         if (score_names[i] == subject)
             scores[i] *= (1 + (percentage / 100));
+        scores[i] = int(round(scores[i]));
         if (scores[i] > 100 || scores[i] < 0)
             scores[i] > 100 ? scores[i] = 100 : scores[i] = 0;
     }
@@ -87,7 +88,7 @@ bool Student::editscore() // find the last score, delete it and reduce the count
 
 
 
-void Student::addprojscore(float grade, string course) { //add project score 
+void Student::addprojscore(float grade, string course) { //add project score
     if (!proj_score || (proj_name == course))
     {
         proj_score = grade;
@@ -474,12 +475,12 @@ void Records::print() { //print students and their scores
         cout << left << setw(9) << students[i]->firstname
             << left << setw(13) << students[i]->lastname
             << left << setw(10) << students[i]->id
-            << left << setw(0) << students[i]->student_type << "             ";
+            << left << setw(10) << students[i]->student_type;
 
         //print project score if it is entered
         if (students[i]->proj_score != NULL)
         {
-            cout << left << setw(5) << students[i]->proj_name << ":" << students[i]->proj_score << "        ";
+            cout << left << ' ' << students[i]->proj_name << ":" << students[i]->proj_score << " ";
         }
         else {
             cout << left << setw(13) << "-";
@@ -489,7 +490,7 @@ void Records::print() { //print students and their scores
         int j;
         for (j = 0; j < students[i]->count; j++) {
             cout << right << setw(7) << students[i]->score_names[j] << ":";
-            cout << left << setw(3) << students[i]->scores[j];
+            cout << left << setw(3) << students[i]->scores[j] << " ";
         }
         for (; j < NUM_TESTS; j++) {
             cout << left << setw(10) << "-";
@@ -505,11 +506,12 @@ void Records::print() { //print students and their scores
 bool Records::load(string& filename) {//copy student info from file to records database
     bool works = false;
     ifstream loadfile(filename, ios::in); //try to open a file
-    while (loadfile) { //if file can open
+    while (loadfile) { //if afile can open
         works = true;
-        string first, last, type, proj, score, course, grade;
+        string first, last, type, project_score, score, course, grade, project_course_and_score;
+        string project_course = "";
         long id;
-        loadfile >> first >> last >> id >> type >> proj; //get full name
+        loadfile >> first >> last >> id >> type >> project_course_and_score; //get full name
 
         if (first == "") { //if first name empty then there is no more in database
             break;
@@ -522,19 +524,49 @@ bool Records::load(string& filename) {//copy student info from file to records d
         else if (type == "G") {
             addgrad(first, last, id); //create grad
         }
-
-        if (proj != "-") {
-            addprojscore(stof(first), last, proj);
+        bool passed = false;
+        for (int i = 0; i < project_course_and_score.length(); i++)
+        {
+            if (project_course_and_score[i] == ':')
+            {
+                passed = true;
+                i++;
+            }
+            if (passed && project_course_and_score[i] < '0' && project_course_and_score[i] > '9')
+                break;
+            if (!passed)
+                project_course += project_course_and_score[i];
+            else
+                project_score += project_course_and_score[i];
         }
 
+        if (project_course_and_score != "-") {
+            addprojscore(id, project_course, project_score);
+        }
+        string course_and_score;
         for (int i = 0; i < NUM_TESTS; i++) { //get their scores
-            loadfile >> score;
-            loadfile >> course;
-            if (score == "-") { //there are no more scores for this student
+            passed = false;
+            loadfile >> course_and_score;
+            course = score = "";
+            for (int i = 0; i < course_and_score.length(); i++)
+            {
+                if (course_and_score[i] == ':')
+                {
+                    passed = true;
+                    i++;
+                }
+                if (passed && course_and_score[i] < '0' && course_and_score[i] > '9')
+                    break;
+                if (!passed)
+                    course += course_and_score[i];
+                else
+                    score += course_and_score[i];
+            }
+            if (course_and_score == "-") { //there are no more scores for this student
                 continue;
             }
             else { //add score to students list
-                addscore(stol(first), last, score);
+                addscore(id, course, score);
             }
         }
 
@@ -549,27 +581,28 @@ bool Records::save(string& filename) {
     ofstream savefile(filename, ios::out);
     for (int i = 0; i < count; i++) {
         //print name, student type, project score
-        savefile << left << setw(7) << students[i]->firstname
-            << left << setw(9) << students[i]->lastname
-            << left << setw(6) << students[i]->student_type;
+        savefile << left << setw(7) << students[i]->firstname << ' '
+            << left << setw(9) << students[i]->lastname << ' '
+            << left << setw(6) << students[i]->id << ' '
+            << left << setw(6) << students[i]->student_type << ' ';
 
 
         //print project score if it is entered
         if (students[i]->proj_score == NULL) {
-            savefile << left << setw(8) << "-";
+            savefile << left << setw(8) << " - ";
         }
         else {
-            savefile << left << setw(8) << students[i]->proj_score;
+            savefile << left << students[i]->proj_name << ':' << students[i]->proj_score << ' ';
         }
 
         //print scores
         int j;
         for (j = 0; j < students[i]->count; j++) {
             savefile << right << setw(7) << students[i]->score_names[j] << ":";
-            savefile << left << setw(3) << students[i]->scores[j];
+            savefile << left << setw(3) << students[i]->scores[j] << "  ";
         }
         for (; j < NUM_TESTS; j++) {
-            savefile << left << setw(10) << "-";
+            savefile << left << setw(10) << " -";
         }
 
         //print grade
